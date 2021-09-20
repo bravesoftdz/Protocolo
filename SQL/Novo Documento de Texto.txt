@@ -1,0 +1,104 @@
+/*
+ Data de atualização 31/01/2019
+ Quantitativo de processos por departamento
+
+*/
+SELECT departamento, YEAR(dt_tramitacao) AS ANO, 
+       CASE 
+         WHEN MONTH(dt_tramitacao) = 1  THEN 'JANEIRO'
+         WHEN MONTH(dt_tramitacao) = 2  THEN 'FEVEREIRO'
+         WHEN MONTH(dt_tramitacao) = 3  THEN 'MARÇO'
+         WHEN MONTH(dt_tramitacao) = 4  THEN 'ABRIL'
+         WHEN MONTH(dt_tramitacao) = 5  THEN 'MAIO'
+         WHEN MONTH(dt_tramitacao) = 6  THEN 'JUNHO'
+         WHEN MONTH(dt_tramitacao) = 7  THEN 'JULHO'
+         WHEN MONTH(dt_tramitacao) = 8  THEN 'AGOSTO'
+         WHEN MONTH(dt_tramitacao) = 9  THEN 'SETEMBRO'
+         WHEN MONTH(dt_tramitacao) = 10 THEN 'OUTUBRO'
+         WHEN MONTH(dt_tramitacao) = 11 THEN 'NOVEMBRO'
+         WHEN MONTH(dt_tramitacao) = 12 THEN 'DEZEMBRO'
+       END AS MES, 
+       CASE
+         WHEN is_recebido = 0 THEN 'NÃO'
+         WHEN is_recebido = 1 THEN 'SIM'
+       END AS RECEBIDO,  
+       COUNT(*) AS TOTAL
+FROM view_hist_processos
+WHERE
+  dt_tramitacao IS NOT NULL
+GROUP BY departamento, YEAR(dt_tramitacao), MONTH(dt_tramitacao), is_recebido
+ORDER BY departamento, YEAR(dt_tramitacao), MONTH(dt_tramitacao), is_recebido
+
+-------------------------------------------------------------------------------
+
+-- SELECT * FROM view_quantitativo_processo
+SELECT NUM_PROCESSO,MONTH(dt_tramitacao) AS Mes, YEAR(dt_tramitacao) AS ANO
+FROM view_hist_processos
+WHERE
+  NUM_PROCESSO IS NOT NULL
+  AND YEAR(dt_tramitacao) IS NOT NULL
+GROUP BY NUM_PROCESSO, MONTH(dt_tramitacao), YEAR(dt_tramitacao)
+ORDER BY NUM_PROCESSO, MONTH(dt_tramitacao), YEAR(dt_tramitacao)
+
+-------------------------------------------------------------------------------
+
+-- SELECT * FROM view_hist_processos_por_ano
+SELECT ANO, COUNT(*) AS TOTAL
+FROM view_quantitativo_processo
+GROUP BY ANO
+ORDER BY ANO
+
+-------------------------------------------------------------------------------
+
+-- SELECT * FROM view_hist_processos_por_MES
+SELECT ANO, MES, COUNT(*) AS TOTAL
+FROM view_quantitativo_processo
+GROUP BY ANO, MES
+ORDER BY ANO, MES
+------------------------------
+-- Deletar procesos
+
+SELECT *
+FROM tb_historico_processo
+WHERE
+  ID_CAD_PROTOCOLO = (SELECT ID_CAD_PROTOCOLO
+                      FROM view_lista_processos
+                      WHERE
+                        NUM_PROCESSO = '09072277/2017' AND
+                        DEPARTAMENTO = 'UNCDV'  
+                        LIMIT 1
+                     )
+                     
+SELECT *
+FROM tb_cad_protocolo
+WHERE
+  ID_CAD_PROTOCOLO = (SELECT ID_CAD_PROTOCOLO
+                      FROM view_lista_processos
+                      WHERE
+                        NUM_PROCESSO = '09072277/2017' AND
+                        DEPARTAMENTO = 'UNCDV'  
+                        LIMIT 1
+                     )  
+
+
+--
+
+DELETE FROM tb_historico_processo 
+WHERE
+  ID_CAD_PROTOCOLO = (SELECT ID_CAD_PROTOCOLO
+                      FROM view_lista_processos
+                      WHERE
+                        NUM_PROCESSO = '09072277/2017' AND
+                        DEPARTAMENTO = 'UNCDV'  
+                        LIMIT 1
+                     ); commit;   
+                     
+DELETE FROM tb_cad_protocolo 
+WHERE
+  ID_CAD_PROTOCOLO = (SELECT ID_CAD_PROTOCOLO
+                      FROM view_lista_processos
+                      WHERE
+                        NUM_PROCESSO = '09072277/2017' AND
+                        DEPARTAMENTO = 'UNCDV'  
+                        LIMIT 1
+                     ); commit;                

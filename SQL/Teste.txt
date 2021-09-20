@@ -1,0 +1,74 @@
+SELECT PR.NUM_PROCESSO,
+       CASE 
+         WHEN  (SELECT HIST_DEPARTAMENTO 
+                FROM VIEW_HIST_PROCESSOS 
+                WHERE 
+                  NUM_PROCESSO LIKE PR.NUM_PROCESSO
+                LIMIT 1) IS NOT NULL THEN (SELECT HIST_DEPARTAMENTO 
+                                           FROM VIEW_HIST_PROCESSOS 
+                                           WHERE 
+                                             NUM_PROCESSO LIKE PR.NUM_PROCESSO 
+                                           LIMIT 1)
+         ELSE
+           (SELECT U.`usuario` AS DEPARTAMENTO
+            FROM `tb_cad_protocolo` P
+            INNER JOIN `tb_usuario` U ON (U.`id_usuario` = P.`id_usuario`)
+            WHERE 
+            NUM_PROCESSO LIKE PR.NUM_PROCESSO)
+       END AS ATUAL                                    
+
+
+FROM
+(SELECT * 
+FROM TB_CAD_PROTOCOLO
+WHERE 
+  NUM_PROCESSO LIKE :NUM_PROCESSO
+LIMIT 1) AS PR
+----------------------------------------------------------------------------------------------
+SELECT PR.NUM_PROCESSO,
+       CASE 
+         WHEN  (SELECT HIST_DEPARTAMENTO 
+                FROM VIEW_HIST_PROCESSOS 
+                WHERE 
+                  NUM_PROCESSO LIKE PR.NUM_PROCESSO
+                LIMIT 1) IS NOT NULL THEN (SELECT HIST_DEPARTAMENTO 
+                                           FROM VIEW_HIST_PROCESSOS 
+                                           WHERE 
+                                             NUM_PROCESSO LIKE PR.NUM_PROCESSO 
+                                           LIMIT 1)
+         ELSE
+           (SELECT U.`usuario` AS DEPARTAMENTO
+            FROM `tb_cad_protocolo` P
+            INNER JOIN `tb_usuario` U ON (U.`id_usuario` = P.`id_usuario`)
+            WHERE 
+            NUM_PROCESSO LIKE PR.NUM_PROCESSO)
+       END AS ATUAL,
+       CASE 
+         WHEN  (SELECT id_departamento
+                FROM VIEW_HIST_PROCESSOS 
+                WHERE 
+                  NUM_PROCESSO LIKE PR.NUM_PROCESSO
+                LIMIT 1) IS NOT NULL THEN (SELECT id_departamento 
+                                           FROM VIEW_HIST_PROCESSOS 
+                                           WHERE 
+                                             NUM_PROCESSO LIKE PR.NUM_PROCESSO 
+                                           LIMIT 1)
+         ELSE
+           (SELECT P.id_departamento
+            FROM `tb_cad_protocolo` P
+            INNER JOIN `tb_usuario` U ON (U.`id_usuario` = P.`id_usuario`)
+            WHERE 
+            NUM_PROCESSO LIKE PR.NUM_PROCESSO)
+       END AS ID_USUARIO
+
+
+FROM
+(SELECT * 
+FROM TB_CAD_PROTOCOLO
+WHERE 
+  NUM_PROCESSO LIKE :NUM_PROCESSO
+LIMIT 1) AS PR
+
+
+
+
